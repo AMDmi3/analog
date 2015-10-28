@@ -2,15 +2,15 @@
 # Please read docs/Readme.html, or http://www.analog.cx/
 # This is a general Unix-like Makefile: Makefiles for other OS's can be found
 #   in the "build" directory.
-CC = gcc           # which compiler to use: eg cc, acc, gcc. NB Different
+CC ?= gcc          # which compiler to use: eg cc, acc, gcc. NB Different
 #                    compilers need different CFLAGS, e.g., -O instead of -O2.
-CFLAGS = -O2    # options, e.g. for optimisation or ANSI compilation.
+CFLAGS ?= -O2   # options, e.g. for optimisation or ANSI compilation.
 #                 Some OS's need -D_FILE_OFFSET_BITS=64 to support files > 2MB.
 #                 HP/UX cc needs CFLAGS = -Aa (HP/UX 9) or -Ae (HP/UX 10)
 #                 BeOS needs CFLAGS = -O2 -Wl,-L/boot/home/config/lib
 #                 BS2000/OSD needs CFLAGS = -XLLML -XLLMK
 #                 NeXTSTEP needs CFLAGS = -O2 -pipe -no-precomp 
-DEFS =          # any combination of -DNOPIPES -DNODNS -DNODIRENT -DNOGLOB ...
+DEFS ?=         # any combination of -DNOPIPES -DNODNS -DNODIRENT -DNOGLOB ...
 #                 ... -DNOOPEN -DNOFOLLOW -DNOALARM -DNOGRAPHICS -DNOGMTIME ...
 #                 ... -DEBCDIC -DUSE_PLAIN_SETJMP ...
 #                 ... -DHAVE_GD -DHAVE_ZLIB -DHAVE_BZLIB -DHAVE_PCRE ...
@@ -27,9 +27,9 @@ DEFS =          # any combination of -DNOPIPES -DNODNS -DNODIRENT -DNOGLOB ...
 #                 DYNIX/ptx needs DEFS = -D_SOCKET_VERSION=11
 #                 MPE/iX needs DEFS = -D_POSIX_SOURCE -D_SOCKET_SOURCE
 #
-OS = UNIX         # Operating system: UNIX, DOS, WIN32, MAC, OS2, OSX, VMS
+OS ?= UNIX        # Operating system: UNIX, DOS, WIN32, MAC, OS2, OSX, VMS
 #                   RISCOS, BEOS, NEXTSTEP, MPEIX, BS2000, AS400, OS390
-LIBS = -lm  # extra libraries needed; most platforms (but not OS X or BeOS)
+LIBS ?= -lm # extra libraries needed; most platforms (but not OS X or BeOS)
 #               need -lm LAST
 #             if you defined HAVE_GD above you also need -lgd -lpng -ljpeg -lz
 #             if you defined HAVE_ZLIB above you also need -lz
