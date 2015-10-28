@@ -821,298 +821,378 @@ void Bnextname(char **name, char **nameend, char *whole, void *arg) {
 void Pnextname(char **name, char **nameend, char *whole, void *arg) {
   char *c, *d;
 
-  if (*name == NULL) {
-    if (arg != NULL && included(whole, FALSE, (Include *)arg)) {
-      *name = "Robots";
-      *nameend = strchr(*name, '\0');
-      return;
-    }
+	if (*name == NULL) {
 
-    if (headmatch(whole, "Mozilla")) {
-		whole += 7;  /* just to save searching time */
-	}
-
-    /* First find Windows versions, starting with "Windows" or "WinNT" or "Win9" */
-    if ((c = strstr(whole, "Windows")) != NULL) {
-		c += 7;
-		if (*c == ';') {
-		/* Mozilla/5 uses strings like "Windows; U; Win98" so we have to look for the second Windows or Win. */
-			if ((d = strstr(c + 1, "Windows")) != NULL) {
-				c = d + 7;
-			} else if ((d = strstr(c + 1, "WinNT")) != NULL || (d = strstr(c + 1, "Win9")) != NULL) {
-				c = d + 3;
-			}
-		 }
-		if (*c == ' ') {
-			c++;
+		if (arg != NULL && included(whole, FALSE, (Include *)arg)) {
+		  *name = "Robots";
+		  *nameend = strchr(*name, '\0');
+		  return;
 		}
-    } else if ((c = strstr(whole, "WinNT")) != NULL || (c = strstr(whole, "Win9")) != NULL) {
-		c += 3;
-	}
+
+		if (headmatch(whole, "Mozilla")) {
+			whole += 7;  /* just to save searching time */
+		}
+
+		/*
+		 *	First find Windows versions, starting with "Windows" or "WinNT" or "Win9" 
+		 *	Sets c = NULL if Windows or WinNT are not present
+		 */
+		if ((c = strstr(whole, "Windows")) != NULL) {
+			c += 7;
+			if (*c == ';') {
+			/* Mozilla/5 uses strings like "Windows; U; Win98" so we have to look for the second Windows or Win. */
+				if ((d = strstr(c + 1, "Windows")) != NULL) {
+					c = d + 7;
+				} else if ((d = strstr(c + 1, "WinNT")) != NULL || (d = strstr(c + 1, "Win9")) != NULL) {
+					c = d + 3;
+				}
+			 }
+			if (*c == ' ') {
+				c++;
+			}
+		} else if ((c = strstr(whole, "WinNT")) != NULL || (c = strstr(whole, "Win9")) != NULL) {
+			c += 3; // Progress past Win
+		}
+
 
 		/* We did find "Windows" or "Win" */
 		if (c != NULL) { 
+
+			if (*c == ' ') {
+				c++;
+			}
+			
 			if (*c == '9' && *(c + 1) == '5') {
 				*name = "Windows:Windows 95";
-			}
-		else if (*c == '9' && *(c + 1) == '8') {
-			if (strstr(c, "Win 9x 4.9")) {
-				*name = "Windows:Windows ME";
-			} else {
-				*name = "Windows:Windows 98";
-			}
-		} else if (*c == 'N' && *(c + 1) == 'T') {
-			/* advance to NT version number, which corresponds to advertised OS */
-			c += 2;
-			if (*c == ' ') {
-				c++;
-			}
-			if (*c == '5') {
-				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-					*name = "Windows:Windows 2000";
-				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
-					*name = "Windows:Windows XP";
-				} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
-					*name = "Windows:Windows Server 2003";
+			} else if (*c == '9' && *(c + 1) == '8') {
+				if (strstr(c, "Win 9x 4.9")) {
+					*name = "Windows:Windows ME";
 				} else {
-					*name = "Windows:Unknown Windows";
+					*name = "Windows:Windows 98";
 				}
-			} else if (*c == '6') {
-				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-					*name = "Windows:Windows Vista/Server 2008";
-				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
-					*name = "Windows:Windows 7/Server 2008 R2";
+			} else if (*c == 'N' && *(c + 1) == 'T') {
+				/* advance to NT version number, which corresponds to advertised OS */
+				c += 2;
+				if (*c == ' ') {
+					c++;
+				}
+				if (*c == '5') {
+					if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+						*name = "Windows:Windows 2000";
+					} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+						/* For some Very Strange Reason Windows Phone 6.5 appears after a Windows XP UA */
+						if (strstr(whole, "Windows Phone 6.5") != NULL) {
+							*name = "Windows:Windows Phone OS 6.5";
+						} else {
+							*name = "Windows:Windows XP";
+						}
+					} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
+						*name = "Windows:Windows Server 2003";
+					} else {
+						*name = "Windows:Unknown Windows";
+					}
+				} else if (*c == '6') {
+					if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+						*name = "Windows:Windows Vista/Server 2008";
+					} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+						*name = "Windows:Windows 7/Server 2008 R2";
+					} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
+						*name = "Windows:Windows 8/Server 2012";
+					} else {
+						*name = "Windows:Unknown Windows";
+					}
+				} else if (*c >= '7' && *c <= '9') {
+					*name = "Windows:Unknown Windows";
 				} else {
-					*name = "Windows:Unknown Windows";
+					*name = "Windows:Windows NT 4.0";
 				}
-			} else if (*c >= '7' && *c <= '9') {
-				*name = "Windows:Unknown Windows";
-			} else {
-				*name = "Windows:Windows NT 4.0";
-			}
-		} else if (*c == 'C' && *(c + 1) == 'E') {
-			*name = "Windows:Windows CE";
-		} else if (*c == 'P' && *(c + 1) == 'h') { // && *(c + 2) == 'o' && *(c + 3) == 'n' && *(c + 4) == 'e'
-			/* Windows Phone: advance to version number after "Phone OS ", which corresponds to advertised OS */
-			c += 5; // Skip 'Phone'
-			if (*c == ' ') {
-				c++;
-			}
+			} else if (*c == 'C' && *(c + 1) == 'E') {
 
-			if (*c == 'O' && *(c + 1) == 'S') {
-				c += 2; // Skip 'OS'
+				*name = "Windows:Windows CE";
+			
+			} else if (*c == 'P' && *(c + 1) == 'h'&& *(c + 2) == 'o' && *(c + 3) == 'n' && *(c + 4) == 'e') { // 
+
+				/* Windows Phone: advance to version number after "Phone OS ", which corresponds to advertised OS */
+				c += 5; // Skip 'Phone'
 				if (*c == ' ') {
 					c++;
 				}
 
-				if (*c == '7') {
-
-					if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-						*name = "Windows:Windows Phone OS 7.0";
-					} else if (*(c + 1) == '.' && (*(c + 2) == '5')) {
-						*name = "Windows:Windows Phone OS 7.5";
+				/* "Windows Phone Search (Windows Phone OS 7.10;NOKIA;Lumia 710;7.10;7740)" seems to be legal, note NO Mozilla tag?? */
+				if (*c == 'S' && *(c + 1) == 'e' && *(c + 2) == 'a') {
+					c += 6; // Skip 'Search'
+					if (*c == ' ') {
+						c++;
+					}
+					if (*c == '(' && *(c + 1) == 'W' && *(c + 2) == 'i') {
+						c += 15; // Skip '(Windows Phone '
 					}
 				}
 
-			}
-			
-      /* next three not MSIE, but some other vendor might use them */
-		} else if (*c == 'X' && *(c + 1) == 'P') {
-			*name = "Windows:Windows XP";
-		} else if (*c == '2' && *(c + 1) == '0' && *(c + 2) == '0' && *(c + 3) == '0') {
-			*name = "Windows:Windows 2000";
-		} else if (*c == 'M' && (*(c + 1) == 'E' || (*(c + 1) == 'e') || headmatch(c + 1, "illennium"))) {
-			*name = "Windows:Windows ME";
-		} else if (*c == '3' && *(c + 1) == '.' && *(c + 2) == '1') {
-			*name = "Windows:Windows 3.1x/NT 3.51";
-		} else if ((*c == '1' && *(c + 1) == '6') || strstr(c + 1, "16bit") || strstr(c + 1, "16-bit")) {
-			*name = "Windows:Windows 16-bit";
-		} else if ((*c == '3' && *(c + 1) == '2') || strstr(c + 1, "32bit") || strstr(c + 1, "32-bit")) {
-			*name = "Windows:Windows 32-bit";
-		} else {
-			*name = "Windows:Unknown Windows";
-		  }
-    }
+				/* Windows Phone 6.5 appears as NT 5.1 (dealt with elsewhere), WP 7 has "OS" as the next field, WP 7+ has OS in it */
+				if (*c == 'O' && *(c + 1) == 'S') {
+					c += 2; // Skip 'OS'
+					if (*c == ' ') {
+						c++;
+					}
 
+					if (*c == '7') {
 
-//				printf("!!!x");
-		// Remember to handle all nulls!
+						if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+							*name = "Windows:Windows Phone OS 7.0";
+						} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+							*name = "Windows:Windows Phone OS 7.5";
+						} else if (*(c + 1) == '.' && (*(c + 2) == '5')) {
+							*name = "Windows:Windows Phone OS 7.5";
+						} else if (*(c + 1) == '.' && (*(c + 2) == '8')) {
+							*name = "Windows:Windows Phone OS 7.8";
+						} else {
+							*name = "Windows:Windows Phone OS Unknown";
+						}
 
-	/* Android operating systems */
-	else if ((c = strstr(whole, "Android")) != NULL) {
-	  c += 7;
-	  if (*c == ' ') {
-		c++;
-		if (*c == '0') {
-			if (*(c + 1) == '.' && (*(c + 2) == '5')) {
-				*name = "Android:Android 0.5";
+					} else if  (*c == '8') {
+						*name = "Windows:Windows Phone OS 8.0";
+					} else {
+						*name = "Windows:Windows Phone OS Unknown";
+					}
+
+				} else {
+					*name = "Windows:Windows Phone OS Unknown";
+				}
+				
+		  /* next three not MSIE, but some other vendor might use them */
+			} else if (*c == 'X' && *(c + 1) == 'P') {
+				*name = "Windows:Windows XP";
+			} else if (*c == '2' && *(c + 1) == '0' && *(c + 2) == '0' && *(c + 3) == '0') {
+				*name = "Windows:Windows 2000";
+			} else if (*c == 'M' && (*(c + 1) == 'E' || (*(c + 1) == 'e') || headmatch(c + 1, "illennium"))) {
+				*name = "Windows:Windows ME";
+			} else if (*c == '3' && *(c + 1) == '.' && *(c + 2) == '1') {
+				*name = "Windows:Windows 3.1x/NT 3.51";
+			} else if ((*c == '1' && *(c + 1) == '6') || strstr(c + 1, "16bit") || strstr(c + 1, "16-bit")) {
+				*name = "Windows:Windows 16-bit";
+			} else if ((*c == '3' && *(c + 1) == '2') || strstr(c + 1, "32bit") || strstr(c + 1, "32-bit")) {
+				*name = "Windows:Windows 32-bit";
 			} else {
-				*name = "Android:Unknown Android";
+				*name = "Windows:Unknown Windows";
 			}
-		} else if (*c == '1') {
-			if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-				*name = "Android:Android 1.0";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
-				*name = "Android:Android 1.1";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '5')) {
-				*name = "Android:Android 1.5";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '6')) {
-				*name = "Android:Android 1.6";
-			} else {
-				*name = "Android:Unknown Android";
-			}
-		} else if (*c == '2') {
-			if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-				*name = "Android:Android 2.0";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
-				*name = "Android:Android 2.1";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
-				*name = "Android:Android 2.2";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '3')) {
-				*name = "Android:Android 2.3";
-			} else {
-				*name = "Android:Unknown Android";
-			}
-		} else if (*c == '3') {
-			if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-				*name = "Android:Android 3.0";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
-				*name = "Android:Android 3.1";
-			} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
-				*name = "Android:Android 3.2";
-			} else {
-				*name = "Android:Unknown Android";
-			}
-		} else if (*c == '4') {
-			if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-				*name = "Android:Android 4.0";
-			} else {
-				*name = "Android:Unknown Android";
-			}
-		} else {
-			*name = "Android:Unknown Android";
 		}
 
-	  } else {
-		  *name = "Android:Unknown Android";
-	  }
-	}
 
-    /* Now non-Windows operating systems */
-    else if ((c = strstr(whole, "iPhone; U; CPU")) != NULL) {
-		//c += 10;
-		if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
-			*name = "iOS (Apple):iPhone 1.0";
-		} else if ((c = strstr(whole, "CPU iPhone OS")) != NULL) {
-			c += 13;
+		//				printf("!!!x");
+			// Remember to handle all nulls!
+
+		/* Android operating systems */
+		else if ((c = strstr(whole, "Android")) != NULL) {
+			c += 7;
 			if (*c == ' ') {
-				c++;
-				if (*c == '2') {
-					*name = "iOS (Apple):iPhone 2.0";
-				} else if (*c == '3') {
-					*name = "iOS (Apple):iPhone 3.0";
-				} else if (*c == '4') {
-					*name = "iOS (Apple):iPhone 4.0";
-				} else if (*c == '5') {
-					*name = "iOS (Apple):iPhone 5.0";
+			c++;
+			if (*c == '0') {
+				if (*(c + 1) == '.' && (*(c + 2) == '5')) {
+					*name = "Android:Android 0.5";
 				} else {
+					*name = "Android:Unknown Android";
+				}
+			} else if (*c == '1') {
+				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+					*name = "Android:Android 1.0";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+					*name = "Android:Android 1.1";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '5')) {
+					*name = "Android:Android 1.5";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '6')) {
+					*name = "Android:Android 1.6";
+				} else {
+					*name = "Android:Unknown Android";
+				}
+			} else if (*c == '2') {
+				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+					*name = "Android:Android 2.0";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+					*name = "Android:Android 2.1";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
+					*name = "Android:Android 2.2";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '3')) {
+					*name = "Android:Android 2.3";
+				} else {
+					*name = "Android:Unknown Android";
+				}
+			} else if (*c == '3') {
+				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+					*name = "Android:Android 3.0";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+					*name = "Android:Android 3.1";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
+					*name = "Android:Android 3.2";
+				} else {
+					*name = "Android:Unknown Android";
+				}
+			} else if (*c == '4') {
+				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+					*name = "Android:Android 4.0";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+					*name = "Android:Android 4.1";
+				} else {
+					*name = "Android:Unknown Android";
+				}
+			} else {
+				*name = "Android:Unknown Android";
+			}
+
+			} else {
+			  *name = "Android:Unknown Android";
+			}
+		}
+
+		/* Now non-Windows operating systems */
+		else if ((c = strstr(whole, "iPhone; U; CPU")) != NULL) {
+			//c += 10;
+			if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
+				*name = "iOS (Apple):iPhone 1.0";
+			} else if ((c = strstr(whole, "CPU iPhone OS")) != NULL) {
+				c += 13;
+				if (*c == ' ') {
+					c++;
+					if (*c == '2') {
+						*name = "iOS (Apple):iPhone 2.0";
+					} else if (*c == '3') {
+						*name = "iOS (Apple):iPhone 3.0";
+					} else if (*c == '4') {
+						*name = "iOS (Apple):iPhone 4.0";
+					} else if (*c == '5') {
+						*name = "iOS (Apple):iPhone 5.0";
+					} else {
+						*name = "iOS (Apple):iPhone Unknown";
+					}
+
+				 } else {
 					*name = "iOS (Apple):iPhone Unknown";
-				}
+				 }
+			} else {
+				*name = "Apple:iPhone Unknown";
+			}
+		} else if ((c = strstr(whole, "iPad; U; CPU")) != NULL) {
 
-			 } else {
-				*name = "iOS (Apple):iPhone Unknown";
-			 }
-		} else {
-			*name = "Apple:iPhone Unknown";
-		}
-	} else if ((c = strstr(whole, "iPad; U; CPU")) != NULL) {
-
-		if ((c = strstr(whole, "CPU OS")) != NULL) {
-			c += 6;
-			if (*c == ' ') {
-				c++;
-				if (*c == '3') {
-					*name = "iOS (Apple):iPad 3.2";
-				} else if (*c == '4') {
-					*name = "iOS (Apple):iPad 4.2";
-				} else {
+			if ((c = strstr(whole, "CPU OS")) != NULL) {
+				c += 6;
+				if (*c == ' ') {
+					c++;
+					if (*c == '3') {
+						*name = "iOS (Apple):iPad 3.2";
+					} else if (*c == '4') {
+						*name = "iOS (Apple):iPad 4.2";
+					} else if (*c == '5') {
+						*name = "iOS (Apple):iPad 5.0";
+					} else {
+						*name = "iOS (Apple):iPad Unknown";
+					}
+				 } else {
 					*name = "iOS (Apple):iPad Unknown";
-				}
-			 } else {
+				 }
+			} else {
 				*name = "iOS (Apple):iPad Unknown";
-			 }
-		} else {
-			*name = "iOS (Apple):iPad Unknown";
-		}
-	} else if ((c = strstr(whole, "iPod; U; CPU")) != NULL)
-		if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
-			*name = "iOS (Apple):iPod 1.0";
-		} else if ((c = strstr(whole, "CPU iPhone OS")) != NULL) {
-			c += 13;
-			if (*c == ' ') {
-				c++;
-				if (*c == '2') {
-					*name = "iOS (Apple):iPod 2.0";
-				} else if (*c == '3') {
-					*name = "iOS (Apple):iPod 3.0";
-				} else if (*c == '4') {
-					*name = "iOS (Apple):iPod 4.0";
-				} else {
+			}
+		} else if ((c = strstr(whole, "iPod; U; CPU")) != NULL) {
+			if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
+				*name = "iOS (Apple):iPod 1.0";
+			} else if ((c = strstr(whole, "CPU iPhone OS")) != NULL) {
+				c += 13;
+				if (*c == ' ') {
+					c++;
+					if (*c == '2') {
+						*name = "iOS (Apple):iPod 2.0";
+					} else if (*c == '3') {
+						*name = "iOS (Apple):iPod 3.0";
+					} else if (*c == '4') {
+						*name = "iOS (Apple):iPod 4.0";
+					} else {
+						*name = "iOS (Apple):iPod Unknown";
+					}
+				 } else {
 					*name = "iOS (Apple):iPod Unknown";
+				 }
+			} else {
+				*name = "iOS (Apple):iPod Unknown";
+			}
+		} else if ((c = strstr(whole, "Mac OS X")) != NULL) {
+				c += 8;
+				if (*c == ' ') {
+					c++;
 				}
 
-			 } else {
-				*name = "iOS (Apple):iPod Unknown";
-			 }
+				if (*c == '1' && *(c + 1) == '0' && (*(c + 2) == '.' || *(c + 2) == '_')) { // '10.' OR '10_'
+					c += 3;
+					if (*c == '0') {
+						*name = "Apple:Mac OS X 10.0";
+					} else if (*c == '1') {
+						*name = "Apple:Mac OS X 10.1";
+					} else if (*c == '2') {
+						*name = "Apple:Mac OS X 10.2";
+					} else if (*c == '3') {
+						*name = "Apple:Mac OS X 10.3";
+					} else if (*c == '4') {
+						*name = "Apple:Mac OS X 10.4";
+					} else if (*c == '5') {
+						*name = "Apple:Mac OS X 10.5";
+					} else if (*c == '6') {
+						*name = "Apple:Mac OS X 10.6";
+					} else if (*c == '7') {
+						*name = "Apple:Mac OS X 10.7";
+					} else if (*c == '8') {
+						*name = "Apple:Mac OS X 10.8";
+					} else if (*c == '9') {
+						*name = "Apple:Mac OS X 10.9";
+					} else {
+						*name = "Apple:Mac OS X Unknown";
+					}
+				} else {
+					*name = "Apple:Mac OS X Unknown";
+				}
+
+		} else if ((c = strstr(whole, "Mac")) != NULL) {
+			*name = "Apple:Macintosh";
+		} else if (strstr(whole, "Linux") != NULL || strstr(whole, "linux") != NULL) {
+			*name = "Unix:Linux";
+		} else if (strstr(whole, "BSD") != NULL) {
+			*name = "Unix:BSD";
+		} else if (strstr(whole, "SunOS") != NULL || strstr(whole, "sunos") != NULL) {
+			*name = "Unix:SunOS";
+		} else if (strstr(whole, "HP-UX") != NULL || strstr(whole, "HPUX") != NULL || strstr(whole, "hp-ux") != NULL || strstr(whole, "hpux") != NULL)  {
+			*name = "Unix:HP-UX";
+		} else if (strstr(whole, "IRIX") != NULL || strstr(whole, "irix") != NULL) {
+			*name = "Unix:IRIX";
+		} else if (strstr(whole, "AIX") != NULL || strstr(whole, "aix") != NULL) {
+			*name = "Unix:AIX";
+		} else if (strstr(whole, "OSF1") != NULL) {
+			*name = "Unix:OSF1";
+		} else if (strstr(whole, "VMS") != NULL) {
+			*name = "OpenVMS";
+		} else if (strstr(whole, "X11") != NULL) {
+			*name = "Unix:Other Unix";
+		} else if (strstr(whole, "WebTV") != NULL) {
+			*name = "WebTV";
+		} else if (strstr(whole, "OS/2") != NULL) {
+			*name = "OS/2";
+		} else if (strstr(whole, "BeOS") != NULL) {
+			*name = "BeOS";
+		} else if (strstr(whole, "RISC OS") != NULL) {
+			*name = "RISC OS";
+		} else if (strstr(whole, "Amiga") != NULL) {
+			*name = "Amiga";
+		} else if (strstr(whole, "Symbian") != NULL) {
+			*name = "Symbian OS";
+		} else if (strstr(whole, "PalmOS") != NULL || strstr(whole, "PalmSource") != NULL) {
+			*name = "Palm OS";
+		} else if (strstr(whole, "Atari") != NULL) {
+			*name = "Atari";
 		} else {
-			*name = "iOS (Apple):iPod Unknown";
+			*name = "OS unknown";
 		}
-	else if ((c = strstr(whole, "Mac OS X")) != NULL)
-	*name = "Apple:Mac OS X";
-	else if ((c = strstr(whole, "Mac")) != NULL)
-	*name = "Apple:Macintosh";
-    else if (strstr(whole, "Linux") != NULL || strstr(whole, "linux") != NULL)
-      *name = "Unix:Linux";
-    else if (strstr(whole, "BSD") != NULL)
-      *name = "Unix:BSD";
-    else if (strstr(whole, "SunOS") != NULL || strstr(whole, "sunos") != NULL)
-      *name = "Unix:SunOS";
-    else if (strstr(whole, "HP-UX") != NULL || strstr(whole, "HPUX") != NULL ||
-	     strstr(whole, "hp-ux") != NULL || strstr(whole, "hpux") != NULL)
-      *name = "Unix:HP-UX";
-    else if (strstr(whole, "IRIX") != NULL || strstr(whole, "irix") != NULL)
-      *name = "Unix:IRIX";
-    else if (strstr(whole, "AIX") != NULL || strstr(whole, "aix") != NULL)
-      *name = "Unix:AIX";
-    else if (strstr(whole, "OSF1") != NULL)
-      *name = "Unix:OSF1";
-    else if (strstr(whole, "VMS") != NULL)
-      *name = "OpenVMS";
-    else if (strstr(whole, "X11") != NULL)
-      *name = "Unix:Other Unix";
-    else if (strstr(whole, "WebTV") != NULL)
-      *name = "WebTV";
-    else if (strstr(whole, "OS/2") != NULL)
-      *name = "OS/2";
-    else if (strstr(whole, "BeOS") != NULL)
-      *name = "BeOS";
-    else if (strstr(whole, "RISC OS") != NULL)
-      *name = "RISC OS";
-    else if (strstr(whole, "Amiga") != NULL)
-      *name = "Amiga";
-    else if (strstr(whole, "Symbian") != NULL)
-      *name = "Symbian OS";
-    else if (strstr(whole, "PalmOS") != NULL ||
-	     strstr(whole, "PalmSource") != NULL)
-      *name = "Palm OS";
-    else if (strstr(whole, "Atari") != NULL)
-      *name = "Atari";
-    else
-      *name = "OS unknown";
-    *nameend = strchr(*name, '\0');
-  }
-  else
-    *name = NULL;
+
+		*nameend = strchr(*name, '\0');
+	} else {
+		*name = NULL;
+	}
 }
 
 void Nnextname(char **name, char **nameend, char *whole, void *arg) {
