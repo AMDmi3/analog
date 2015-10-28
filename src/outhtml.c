@@ -117,8 +117,8 @@ void html_pagebotstart(FILE *outf, Outchoices *od) {
 
 /* The credit line at the bottom of the page */
 void html_credit(FILE *outf, Outchoices *od) {
-  fprintf(outf, "<i>%s <a HREF=\"%s\">analog %s</a>.\n", od->lngstr[credit_],
-	  ANALOGURL, VNUMBER);
+  fprintf(outf, "<i>%s <a HREF=\"%s\">analog</a> <a HREF=\"%s\">C:Amie Edition %s</a>.\n", od->lngstr[credit_],
+	  ANALOGURL, CAMIEURL, VNUMBER);
 }
 
 /* The program run time */

@@ -874,12 +874,22 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 	}
 	else if (*c == '6') {
 	  if (*(c + 1) == '.' && (*(c + 2) == '0'))
-	    *name = "Windows:Windows Vista";
+	    *name = "Windows:Windows Vista/Server 2008";
+	  else if (*(c + 1) == '.' && (*(c + 2) == '1'))
+	    *name = "Windows:Windows Server 2008";
+	  else
+	    *name = "Windows:Unknown Windows";
 	}
-	else if (*c >= '7' && *c <= '9')
+	else if (*c == '7') {
+	  if (*(c + 1) == '.' && (*(c + 2) == '0'))
+	    *name = "Windows:Windows 7.0";
+	  else
+	    *name = "Windows:Unknown Windows";
+	}
+	else if (*c >= '8' && *c <= '9')
 	  *name = "Windows:Unknown Windows";
 	else
-	  *name = "Windows:Windows NT";
+	  *name = "Windows:Windows NT 4.0";
       }
       else if (*c == 'C' && *(c + 1) == 'E')
 	*name = "Windows:Windows CE";

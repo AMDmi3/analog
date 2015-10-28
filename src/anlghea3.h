@@ -19,7 +19,7 @@
 
 /*** OS specific things ***/
 
-#define VNUMBER "6.0.2"    /* the version number of this program */
+#define VNUMBER "6.0.3"    /* the version number of this program */
 
 #undef VERSION /* If no OS set, compilation will fail by not knowing VERSION */
 
@@ -473,6 +473,7 @@ typedef unsigned long IN_ADDR_T;
 #define ENGSHORTDAYLEN (3)/* length of longest of engshortdays in globals.c */
 #define ITEMFNS_NUMBER ((ITEM_NUMBER) + 2) /* in inpfns[] in globals.c */
 #define ANALOGURL "http://www.analog.cx/"
+#define CAMIEURL "http://camie.dyndns.org/"
 #define FIRST_TIME (0)
 #define LAST_TIME (ULONG_MAX)
 #define LAST_DATE ((ULONG_MAX) / 1440)
