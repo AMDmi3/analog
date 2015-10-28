@@ -928,6 +928,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 				*name = "Android:Android 1.1";
 			} else if (*(c + 1) == '.' && (*(c + 2) == '5')) {
 				*name = "Android:Android 1.5";
+			} else if (*(c + 1) == '.' && (*(c + 2) == '6')) {
+				*name = "Android:Android 1.6";
 			} else {
 				*name = "Android:Unknown Android";
 			}
@@ -941,6 +943,12 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 			} else {
 				*name = "Android:Unknown Android";
 			}
+		} else if (*c == '3') {
+			if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+				*name = "Android:Android 3.0";
+			} else {
+				*name = "Android:Unknown Android";
+			}
 		} else {
 			*name = "Android:Unknown Android";
 		}
@@ -951,8 +959,72 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 	}
 
     /* Now non-Windows operating systems */
-    else if ((c = strstr(whole, "iPhone")) != NULL)
-	*name = "Apple:iPhone";
+    else if ((c = strstr(whole, "iPhone; U; CPU")) != NULL) {
+		//c += 10;
+		if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
+			*name = "iOS (Apple):iPhone 1.0";
+		} else if ((c = strstr(whole, "CPU iPhone OS")) != NULL) {
+			c += 13;
+			if (*c == ' ') {
+				c++;
+				if (*c == '2') {
+					*name = "iOS (Apple):iPhone 2.0";
+				} else if (*c == '3') {
+					*name = "iOS (Apple):iPhone 3.0";
+				} else if (*c == '4') {
+					*name = "iOS (Apple):iPhone 4.0";
+				} else {
+					*name = "iOS (Apple):iPhone Unknown";
+				}
+
+			 } else {
+				*name = "iOS (Apple):iPhone Unknown";
+			 }
+		} else {
+			*name = "Apple:iPhone Unknown";
+		}
+	} else if ((c = strstr(whole, "iPad; U; CPU")) != NULL) {
+
+		if ((c = strstr(whole, "CPU OS")) != NULL) {
+			c += 6;
+			if (*c == ' ') {
+				c++;
+				if (*c == '3') {
+					*name = "iOS (Apple):iPad 3.2";
+				} else if (*c == '4') {
+					*name = "iOS (Apple):iPad 4.2";
+				} else {
+					*name = "iOS (Apple):iPad Unknown";
+				}
+			 } else {
+				*name = "iOS (Apple):iPad Unknown";
+			 }
+		} else {
+			*name = "iOS (Apple):iPad Unknown";
+		}
+	} else if ((c = strstr(whole, "iPod; U; CPU")) != NULL)
+		if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
+			*name = "iOS (Apple):iPod 1.0";
+		} else if ((c = strstr(whole, "CPU iPhone OS")) != NULL) {
+			c += 13;
+			if (*c == ' ') {
+				c++;
+				if (*c == '2') {
+					*name = "iOS (Apple):iPod 2.0";
+				} else if (*c == '3') {
+					*name = "iOS (Apple):iPod 3.0";
+				} else if (*c == '4') {
+					*name = "iOS (Apple):iPod 4.0";
+				} else {
+					*name = "iOS (Apple):iPod Unknown";
+				}
+
+			 } else {
+				*name = "iOS (Apple):iPod Unknown";
+			 }
+		} else {
+			*name = "iOS (Apple):iPod Unknown";
+		}
 	else if ((c = strstr(whole, "Mac OS X")) != NULL)
 	*name = "Apple:Mac OS X";
 	else if ((c = strstr(whole, "Mac")) != NULL)
