@@ -719,6 +719,7 @@ void bnextname(char **name, char **nameend, char *whole, logical build) {
       ;
   }
   else if (**nameend == '/') {
+
     *name = *nameend + 1;
     for (*nameend = *name; **nameend != '.' && **nameend != ' ' &&
 	   **nameend != '\0'; (*nameend)++)
@@ -757,65 +758,94 @@ void pnextname(char **name, char **nameend, char *whole, logical build) {
    does the actual tree-ification of this canonical form.                    */
 void Bnextname(char **name, char **nameend, char *whole, void *arg) {
   /* NB "arg" is ignored */
-  static char *s1 = "Netscape (compatible)";
-  size_t len;
+	char *c;
+	static char *s1 = "Netscape (compatible)";
+	size_t len;
+	int bIsMsie = 0;
 
-  if (*name == NULL) {
-    /* First recognise some strings anywhere in the name (mostly claiming to be
-       "Mozilla (compatible)"). The order may matter, for example if some
-       browsers claim to both be Mozilla (compatible) and MSIE (compatible).
-       Note that "len =" is simple assignment and will always return true; it's
-       just a way of setting len. */
-    if (((*name = strstr(whole, "Mosaic")) != NULL && (len = 6)) ||
-	((*name = strstr(whole, "mosaic")) != NULL && (len = 6)) ||
-	((*name = strstr(whole, "Konqueror")) != NULL && (len = 9)) ||
-	((*name = strstr(whole, "Galeon")) != NULL && (len = 6)) ||
-	((*name = strstr(whole, "Phoenix")) != NULL && (len = 7)) ||
-	((*name = strstr(whole, "Firebird")) != NULL && (len = 8)) ||
-	((*name = strstr(whole, "Firefox")) != NULL && (len = 7)) ||
-	((*name = strstr(whole, "Chimera")) != NULL && (len = 7)) ||
-	((*name = strstr(whole, "Camino")) != NULL && (len = 6)) ||
-	((*name = strstr(whole, "Chrome")) != NULL && (len = 6)) ||
-	((*name = strstr(whole, "Safari")) != NULL && (len = 6)) ||
-	((*name = strstr(whole, "WebTV")) != NULL && (len = 5)) ||
-	((*name = strstr(whole, "Opera")) != NULL && (len = 5)) ||
-	((*name = strstr(whole, "NetFront")) != NULL && (len = 8)) || 
-	((*name = strstr(whole, "IEMobile")) != NULL && (len = 8)) || 
-	((*name = strstr(whole, "MSIE")) != NULL && (len = 4))) {
-      *nameend = *name + len;
-      if (**nameend == '/' || **nameend == ' ') {
-	for ((*nameend)++; ISALNUM(**nameend) || **nameend == '.' ||
-	       **nameend == '-' || **nameend == '+'; (*nameend)++)
-	  ;  /* run to end of version number */
-      }
-      else if (headmatch(*name, "Galeon") /* Galeon uses "Galeon; v.vv" */ &&
-	       **nameend == ';' && *(*nameend + 1) == ' ' &&
-	       ISDIGIT(*(*nameend + 2))) {
-	for ((*nameend) += 2; ISALNUM(**nameend) || **nameend == '.' ||
-	       **nameend == '-' || **nameend == '+'; (*nameend)++)
-	  ;
-      }
-    }
-    else if (headmatch(whole, "Mozilla")) {
-      if (strstr(whole + 9, "compatible") || strstr(whole + 9, "Compatible")) {
-	*name = s1;
-	*nameend = s1 + 21;
-      }
-      else {  /* probably genuine Netscape/Mozilla */
-	*name = whole;
-	/* Mozilla has version number much later so keep the whole string */
-	if (*(*name + 8) == '5' ||
-	    (*nameend = strchr(whole + 7, ' ')) == NULL)
-	  *nameend = strchr(whole + 7, '\0');
-      }
-    }
-    else {
-      *name = whole;
-      *nameend = strchr(whole, '\0');
-    }
-  }
-  else
-    *name = NULL;
+	if (*name == NULL) {
+		/* First recognise some strings anywhere in the name (mostly claiming to be
+		   "Mozilla (compatible)"). The order may matter, for example if some
+		   browsers claim to both be Mozilla (compatible) and MSIE (compatible).
+		   Note that "len =" is simple assignment and will always return true; it's
+		   just a way of setting len. */
+		if (
+			((*name = strstr(whole, "Mosaic")) != NULL && (len = 6)) ||
+			((*name = strstr(whole, "mosaic")) != NULL && (len = 6)) ||
+			((*name = strstr(whole, "Konqueror")) != NULL && (len = 9)) ||
+			((*name = strstr(whole, "Galeon")) != NULL && (len = 6)) ||
+			((*name = strstr(whole, "Phoenix")) != NULL && (len = 7)) ||
+			((*name = strstr(whole, "Firebird")) != NULL && (len = 8)) ||
+			((*name = strstr(whole, "Firefox")) != NULL && (len = 7)) ||
+			((*name = strstr(whole, "Chimera")) != NULL && (len = 7)) ||
+			((*name = strstr(whole, "Camino")) != NULL && (len = 6)) ||
+			((*name = strstr(whole, "Chrome")) != NULL && (len = 6)) ||
+			((*name = strstr(whole, "Safari")) != NULL && (len = 6)) ||
+			((*name = strstr(whole, "WebTV")) != NULL && (len = 5)) ||
+			((*name = strstr(whole, "Opera")) != NULL && (len = 5)) ||
+			((*name = strstr(whole, "NetFront")) != NULL && (len = 8)) || 
+			((*name = strstr(whole, "IEMobile")) != NULL && (len = 8)) || 
+			((*name = strstr(whole, "Trident")) != NULL && (len = 7) && (bIsMsie = 1)) || 
+			((*name = strstr(whole, "MSIE")) != NULL && (len = 4))
+		) {
+			*nameend = *name + len;
+			
+			/* This section is used to detect force MSIE based upon the rendering engine
+			   being used rather than the user agent.
+			   The Trident (MSHTML) identifier identified the actual browser version
+			   http://msdn.microsoft.com/en-us/library/ms537503(v=vs.85).aspx
+			   While the MSIE flag identifies the compatiblity mode alias in use (if any)
+			   Only if compatiblity mode is off will the browser version and renderer version
+			   synchronise. e.g. (Trident/5.0 == MSIE 9.0) == Standards Mode IE 9
+			*/
+			if (bIsMsie) {
+				if ((c = strstr(*name, "Trident")) != NULL) {
+					c = c + 7;
+					if (*c == '/') {
+						*c++;
+						len = 4;
+						if (*(c) == '4') {
+							*name = "MSIE 8.0";
+							*nameend = *name + len;
+						} else if (*(c) == '5') {
+							*name = "MSIE 9.0";
+							*nameend = *name + len;
+						} else if (*(c) == '6') {
+							*name = "MSIE 10.0";
+							*nameend = *name + len;
+						} else if (*(c) == '7') {
+							*name = "MSIE 11.0";
+							*nameend = *name + len;
+						}
+					}
+				}
+			}
+				
+			if (**nameend == '/' || **nameend == ' ') {
+				for ((*nameend)++; ISALNUM(**nameend) || **nameend == '.' || **nameend == '-' || **nameend == '+'; (*nameend)++)
+					;  /* run to end of version number */
+					
+			} else if (headmatch(*name, "Galeon") /* Galeon uses "Galeon; v.vv" */ && **nameend == ';' && *(*nameend + 1) == ' ' && ISDIGIT(*(*nameend + 2))) {
+				for ((*nameend) += 2; ISALNUM(**nameend) || **nameend == '.' || **nameend == '-' || **nameend == '+'; (*nameend)++)
+					;
+			}
+		} else if (headmatch(whole, "Mozilla")) {
+			if (strstr(whole + 9, "compatible") || strstr(whole + 9, "Compatible")) {
+				*name = s1;
+				*nameend = s1 + 21;
+			} else {  /* probably genuine Netscape/Mozilla */
+				*name = whole;
+				/* Mozilla has version number much later so keep the whole string */
+				if (*(*name + 8) == '5' || (*nameend = strchr(whole + 7, ' ')) == NULL)
+					*nameend = strchr(whole + 7, '\0');
+			}
+	    } else {
+			*name = whole;
+			*nameend = strchr(whole, '\0');
+	    }
+	} else {
+		*name = NULL;
+	}
 }
 
 void Pnextname(char **name, char **nameend, char *whole, void *arg) {
@@ -898,6 +928,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "Windows:Windows 7/Server 2008 R2";
 					} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
 						*name = "Windows:Windows 8/Server 2012";
+					} else if (*(c + 1) == '.' && (*(c + 2) == '3')) {
+						*name = "Windows:Windows 8.1/Server 2012 R2";
 					} else {
 						*name = "Windows:Unknown Windows";
 					}
@@ -951,7 +983,15 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						}
 
 					} else if  (*c == '8') {
-						*name = "Windows:Windows Phone OS 8.0";
+
+						if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+							*name = "Windows:Windows Phone OS 8.0";
+						} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+							*name = "Windows:Windows Phone OS 8.1";
+						} else {
+							*name = "Windows:Windows Phone OS Unknown";
+						}
+
 					} else {
 						*name = "Windows:Windows Phone OS Unknown";
 					}
@@ -1032,6 +1072,12 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 					*name = "Android:Android 4.0";
 				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
 					*name = "Android:Android 4.1";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
+					*name = "Android:Android 4.2";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '3')) {
+					*name = "Android:Android 4.3";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '4')) {
+					*name = "Android:Android 4.4";
 				} else {
 					*name = "Android:Unknown Android";
 				}
@@ -1063,6 +1109,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPhone 5.0";
 					} else if (*c == '6') {
 						*name = "iOS (Apple):iPhone 6.0";
+					} else if (*c == '7') {
+						*name = "iOS (Apple):iPhone 7.0";
 					} else {
 						*name = "iOS (Apple):iPhone Unknown";
 					}
@@ -1087,6 +1135,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPad 5.0";
 					} else if (*c == '6') {
 						*name = "iOS (Apple):iPad 6.0";
+					} else if (*c == '7') {
+						*name = "iOS (Apple):iPad 7.0";
 					} else {
 						*name = "iOS (Apple):iPad Unknown";
 					}
@@ -1113,6 +1163,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPod 5.0";
 					} else if (*c == '6') {
 						*name = "iOS (Apple):iPod 6.0";
+					} else if (*c == '7') {
+						*name = "iOS (Apple):iPod 7.0";
 					} else {
 						*name = "iOS (Apple):iPod Unknown";
 					}
