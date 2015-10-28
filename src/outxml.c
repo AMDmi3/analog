@@ -73,11 +73,12 @@ void xml_stylehead(FILE *outf, Outchoices *od)
 
 
 	XML_OUT("<?xml version=\"%s\" encoding=\"%s\" standalone=\"no\" ?>"
-		XMLDBG "<!DOCTYPE analog-data PUBLIC \"::timian/analog-data::\" \"http://timian.jessen.ch/dtd/analog-data.dtd\">"
+		XMLDBG "<!DOCTYPE analog-data PUBLIC \"::timian/analog-data::\" \"%s\">"
 		XMLDBG "<analog-data version=\"%s\" timestamp=\"%s\">"
 		XMLDBG "<analog>",
 		xmlversion, 
 		encoding,
+		od->xmldtd,
 		VNUMBER,	// VERSION instead? VERSION includes platform it was built.
 		buffer );
 

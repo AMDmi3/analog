@@ -639,6 +639,7 @@ Configfns cf[] = {
   {"COMPSEP", &configstr, (void *)&(opts.outopts.compsep)},
   {"PRESEP", &configstr, (void *)&(opts.outopts.compsep)},
   {"HOSTNAME", &configstr, (void *)&(opts.outopts.hostname)},
+  {"XMLDTD", &configstr, (void *)&(opts.outopts.xmldtd)},
   {"HOSTURL", &configstr, (void *)&(opts.outopts.hosturl)},
   {"LOGO", &configstr, (void *)&(opts.outopts.logo)},
   {"LOGOURL", &configstr, (void *)&(opts.outopts.logourl)},
@@ -1911,6 +1912,7 @@ void defaults(Options *op) {
   op->outopts.bytesdp = BYTESDP;
   op->outopts.norobots = NOROBOTS;
   COPYSTR(op->outopts.hostname, HOSTNAME);
+  COPYSTR(op->outopts.xmldtd, XMLDTD);
   COPYSTR(op->outopts.hosturl, HOSTURL);
   op->outopts.baseurl = NULL;
   COPYSTR(op->outopts.logo, LOGO);

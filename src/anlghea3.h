@@ -19,7 +19,7 @@
 
 /*** OS specific things ***/
 
-#define VNUMBER "6.0.3"    /* the version number of this program */
+#define VNUMBER "6.0.4"    /* the version number of this program */
 
 #undef VERSION /* If no OS set, compilation will fail by not knowing VERSION */
 
@@ -1009,6 +1009,7 @@ typedef struct outchoices {
   size_t daylen, plaindaylen, monthlen, plainmonthlen, ampmlen, plainampmlen;
   char *hostname, *hosturl, *logo, *logourl, *imagedir;
   char *stylesheet,*cssprefix, *chartdir, *localchartdir;
+  char *xmldtd;
   char markchar;
   logical norobots;
   logical rawbytes;

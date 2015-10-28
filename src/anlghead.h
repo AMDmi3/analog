@@ -35,6 +35,12 @@
    output; use "none" for no linking. */
 #endif
 
+#ifndef XMLDTD
+#define XMLDTD "http://timian.jessen.ch/dtd/analog-data.dtd"
+/* The URL of your host's home page, for linking to at the top of the
+   output; use "none" for no linking. */
+#endif
+
 #ifndef LOGFILE
 #define LOGFILE "logfile.log"
 /* The name of the default logfile. Can be a list, separated by commas
