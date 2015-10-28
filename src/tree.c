@@ -780,6 +780,7 @@ void Bnextname(char **name, char **nameend, char *whole, void *arg) {
 	((*name = strstr(whole, "WebTV")) != NULL && (len = 5)) ||
 	((*name = strstr(whole, "Opera")) != NULL && (len = 5)) ||
 	((*name = strstr(whole, "NetFront")) != NULL && (len = 8)) || 
+	((*name = strstr(whole, "IEMobile")) != NULL && (len = 8)) || 
 	((*name = strstr(whole, "MSIE")) != NULL && (len = 4))) {
       *nameend = *name + len;
       if (**nameend == '/' || **nameend == ' ') {
@@ -827,23 +828,27 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
       return;
     }
 
-    if (headmatch(whole, "Mozilla"))
+    if (headmatch(whole, "Mozilla")) {
 		whole += 7;  /* just to save searching time */
+	}
 
     /* First find Windows versions, starting with "Windows" or "WinNT" or "Win9" */
     if ((c = strstr(whole, "Windows")) != NULL) {
 		c += 7;
 		if (*c == ';') {
 		/* Mozilla/5 uses strings like "Windows; U; Win98" so we have to look for the second Windows or Win. */
-			if ((d = strstr(c + 1, "Windows")) != NULL)
+			if ((d = strstr(c + 1, "Windows")) != NULL) {
 				c = d + 7;
-			else if ((d = strstr(c + 1, "WinNT")) != NULL || (d = strstr(c + 1, "Win9")) != NULL)
+			} else if ((d = strstr(c + 1, "WinNT")) != NULL || (d = strstr(c + 1, "Win9")) != NULL) {
 				c = d + 3;
+			}
 		 }
-		if (*c == ' ')
+		if (*c == ' ') {
 			c++;
-    } else if ((c = strstr(whole, "WinNT")) != NULL || (c = strstr(whole, "Win9")) != NULL)
-      c += 3;
+		}
+    } else if ((c = strstr(whole, "WinNT")) != NULL || (c = strstr(whole, "Win9")) != NULL) {
+		c += 3;
+	}
 
 		/* We did find "Windows" or "Win" */
 		if (c != NULL) { 
@@ -859,51 +864,72 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 		} else if (*c == 'N' && *(c + 1) == 'T') {
 			/* advance to NT version number, which corresponds to advertised OS */
 			c += 2;
-			if (*c == ' ')
+			if (*c == ' ') {
 				c++;
+			}
 			if (*c == '5') {
-				if (*(c + 1) == '.' && (*(c + 2) == '0'))
+				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
 					*name = "Windows:Windows 2000";
-				else if (*(c + 1) == '.' && (*(c + 2) == '1'))
+				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
 					*name = "Windows:Windows XP";
-				else if (*(c + 1) == '.' && (*(c + 2) == '2'))
+				} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
 					*name = "Windows:Windows Server 2003";
-				else
+				} else {
 					*name = "Windows:Unknown Windows";
+				}
 			} else if (*c == '6') {
-				if (*(c + 1) == '.' && (*(c + 2) == '0'))
+				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
 					*name = "Windows:Windows Vista/Server 2008";
-				else if (*(c + 1) == '.' && (*(c + 2) == '1'))
-					*name = "Windows:Windows 7.0/Server 2008 R2";
-				else
+				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+					*name = "Windows:Windows 7/Server 2008 R2";
+				} else {
 					*name = "Windows:Unknown Windows";
+				}
 			} else if (*c >= '7' && *c <= '9') {
 				*name = "Windows:Unknown Windows";
+			} else {
+				*name = "Windows:Windows NT 4.0";
 			}
-		else
-			*name = "Windows:Windows NT 4.0";
-	}
-	else if (*c == 'C' && *(c + 1) == 'E')
-	*name = "Windows:Windows CE";
+		} else if (*c == 'C' && *(c + 1) == 'E') {
+			*name = "Windows:Windows CE";
+		} else if (*c == 'P' && *(c + 1) == 'h') { // && *(c + 2) == 'o' && *(c + 3) == 'n' && *(c + 4) == 'e'
+			/* Windows Phone: advance to version number after "Phone OS ", which corresponds to advertised OS */
+			c += 5; // Skip 'Phone'
+			if (*c == ' ') {
+				c++;
+			}
+
+			if (*c == 'O' && *(c + 1) == 'S') {
+				c += 2; // Skip 'OS'
+				if (*c == ' ') {
+					c++;
+				}
+
+				if (*c == '7') {
+
+					if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+						*name = "Windows:Windows Phone OS 7.0";
+					}
+				}
+
+			}
+			
       /* next three not MSIE, but some other vendor might use them */
-      else if (*c == 'X' && *(c + 1) == 'P')
-	*name = "Windows:Windows XP";
-      else if (*c == '2' && *(c + 1) == '0' && *(c + 2) == '0' &&
-	       *(c + 3) == '0')
-	*name = "Windows:Windows 2000";
-      else if (*c == 'M' && (*(c + 1) == 'E' || (*(c + 1) == 'e') ||
-			     headmatch(c + 1, "illennium")))
-	*name = "Windows:Windows ME";
-      else if (*c == '3' && *(c + 1) == '.' && *(c + 2) == '1')
-	*name = "Windows:Windows 3.1x/NT 3.51";
-      else if ((*c == '1' && *(c + 1) == '6') || strstr(c + 1, "16bit") ||
-	       strstr(c + 1, "16-bit"))
-	*name = "Windows:Windows 16-bit";
-      else if ((*c == '3' && *(c + 1) == '2') || strstr(c + 1, "32bit") ||
-	       strstr(c + 1, "32-bit"))
-	*name = "Windows:Windows 32-bit";
-      else
-	*name = "Windows:Unknown Windows";
+		} else if (*c == 'X' && *(c + 1) == 'P') {
+			*name = "Windows:Windows XP";
+		} else if (*c == '2' && *(c + 1) == '0' && *(c + 2) == '0' && *(c + 3) == '0') {
+			*name = "Windows:Windows 2000";
+		} else if (*c == 'M' && (*(c + 1) == 'E' || (*(c + 1) == 'e') || headmatch(c + 1, "illennium"))) {
+			*name = "Windows:Windows ME";
+		} else if (*c == '3' && *(c + 1) == '.' && *(c + 2) == '1') {
+			*name = "Windows:Windows 3.1x/NT 3.51";
+		} else if ((*c == '1' && *(c + 1) == '6') || strstr(c + 1, "16bit") || strstr(c + 1, "16-bit")) {
+			*name = "Windows:Windows 16-bit";
+		} else if ((*c == '3' && *(c + 1) == '2') || strstr(c + 1, "32bit") || strstr(c + 1, "32-bit")) {
+			*name = "Windows:Windows 32-bit";
+		} else {
+			*name = "Windows:Unknown Windows";
+		  }
     }
 
 
