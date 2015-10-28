@@ -5,9 +5,9 @@
 PROGRAM = analog
 
 $(PROGRAM): ALWAYS
-	cd src && make
+	cd src && $(MAKE)
 
 clean:
-	cd src && make clean
+	cd src && $(MAKE) clean
 
 ALWAYS:

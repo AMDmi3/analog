@@ -4,7 +4,6 @@
 #   in the "build" directory.
 CC = gcc           # which compiler to use: eg cc, acc, gcc. NB Different
 #                    compilers need different CFLAGS, e.g., -O instead of -O2.
-MAKE = make        # which "make" to use
 CFLAGS = -O2    # options, e.g. for optimisation or ANSI compilation.
 #                 Some OS's need -D_FILE_OFFSET_BITS=64 to support files > 2MB.
 #                 HP/UX cc needs CFLAGS = -Aa (HP/UX 9) or -Ae (HP/UX 10)
@@ -172,7 +171,7 @@ win32.o: win32.c $(HEADERS) Makefile
 
 force:
 	rm -f $(ALLOBJS)
-	make $(PROGRAM) 'CFLAGS=$(CFLAGS)' 'LIBS=$(LIBS)' \
+	$(MAKE) $(PROGRAM) 'CFLAGS=$(CFLAGS)' 'LIBS=$(LIBS)' \
 	'DEFS=$(DEFS)' 'CC=$(CC)'
 
 clean:
