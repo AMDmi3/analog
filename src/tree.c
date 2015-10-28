@@ -1045,7 +1045,7 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 		}
 
 		/* Now non-Windows operating systems */
-		else if ((c = strstr(whole, "iPhone; U; CPU")) != NULL) {
+		else if ((c = strstr(whole, "iPhone; U; CPU")) != NULL || (c = strstr(whole, "iPhone; CPU")) != NULL) {
 			//c += 10;
 			if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
 				*name = "iOS (Apple):iPhone 1.0";
@@ -1061,6 +1061,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPhone 4.0";
 					} else if (*c == '5') {
 						*name = "iOS (Apple):iPhone 5.0";
+					} else if (*c == '6') {
+						*name = "iOS (Apple):iPhone 6.0";
 					} else {
 						*name = "iOS (Apple):iPhone Unknown";
 					}
@@ -1069,9 +1071,9 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 					*name = "iOS (Apple):iPhone Unknown";
 				 }
 			} else {
-				*name = "Apple:iPhone Unknown";
+				*name = "iOS (Apple):iPhone Unknown";
 			}
-		} else if ((c = strstr(whole, "iPad; U; CPU")) != NULL) {
+		} else if ((c = strstr(whole, "iPad; U; CPU")) != NULL || (c = strstr(whole, "iPad; CPU")) != NULL) {
 
 			if ((c = strstr(whole, "CPU OS")) != NULL) {
 				c += 6;
@@ -1083,6 +1085,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPad 4.2";
 					} else if (*c == '5') {
 						*name = "iOS (Apple):iPad 5.0";
+					} else if (*c == '6') {
+						*name = "iOS (Apple):iPad 6.0";
 					} else {
 						*name = "iOS (Apple):iPad Unknown";
 					}
@@ -1092,7 +1096,7 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 			} else {
 				*name = "iOS (Apple):iPad Unknown";
 			}
-		} else if ((c = strstr(whole, "iPod; U; CPU")) != NULL) {
+		} else if ((c = strstr(whole, "iPod; U; CPU")) != NULL || (c = strstr(whole, "iPod; CPU")) != NULL) {
 			if ((c = strstr(whole, "CPU like Mac OS X")) != NULL) {
 				*name = "iOS (Apple):iPod 1.0";
 			} else if ((c = strstr(whole, "CPU iPhone OS")) != NULL) {
@@ -1105,6 +1109,10 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPod 3.0";
 					} else if (*c == '4') {
 						*name = "iOS (Apple):iPod 4.0";
+					} else if (*c == '5') {
+						*name = "iOS (Apple):iPod 5.0";
+					} else if (*c == '6') {
+						*name = "iOS (Apple):iPod 6.0";
 					} else {
 						*name = "iOS (Apple):iPod Unknown";
 					}
