@@ -1260,8 +1260,16 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 			*name = "Apple:Macintosh";
 		} else if (strstr(whole, "Linux") != NULL || strstr(whole, "linux") != NULL) {
 			*name = "Unix:Linux";
-		} else if (strstr(whole, "BSD") != NULL) {
-			*name = "Unix:BSD";
+		} else if (strstr(whole, "FreeBSD") != NULL || strstr(whole, "freebsd") != NULL) {
+			*name = "Unix:FreeBSD";
+		} else if (strstr(whole, "OpenBSD") != NULL || strstr(whole, "openbsd") != NULL) {
+			*name = "Unix:OpenBSD";
+		} else if (strstr(whole, "NetBSD") != NULL || strstr(whole, "netbsd") != NULL) {
+			*name = "Unix:NetBSD";
+		} else if (strstr(whole, "BSD/OS") != NULL || strstr(whole, "bsd/os") != NULL) {
+			*name = "Unix:BSD/OS";
+		} else if (strstr(whole, "BSD") != NULL || strstr(whole, "bsd") != NULL) {
+			*name = "Unix:Unknown BSD";
 		} else if (strstr(whole, "SunOS") != NULL || strstr(whole, "sunos") != NULL) {
 			*name = "Unix:SunOS";
 		} else if (strstr(whole, "HP-UX") != NULL || strstr(whole, "HPUX") != NULL || strstr(whole, "hp-ux") != NULL || strstr(whole, "hpux") != NULL)  {
