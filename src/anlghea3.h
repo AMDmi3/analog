@@ -19,7 +19,7 @@
 
 /*** OS specific things ***/
 
-#define VNUMBER "6.0.7"    /* the version number of this program */
+#define VNUMBER "6.0.8"    /* the version number of this program */
 
 #undef VERSION /* If no OS set, compilation will fail by not knowing VERSION */
 
@@ -474,6 +474,7 @@ typedef unsigned long IN_ADDR_T;
 #define ITEMFNS_NUMBER ((ITEM_NUMBER) + 2) /* in inpfns[] in globals.c */
 #define ANALOGURL "http://www.analog.cx/"
 #define CAMIEURL "http://camie.dyndns.org/"
+#define CAMIERSSURL "http://camie.dyndns.org/qlink/?id=80"
 #define FIRST_TIME (0)
 #define LAST_TIME (ULONG_MAX)
 #define LAST_DATE ((ULONG_MAX) / 1440)

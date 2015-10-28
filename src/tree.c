@@ -909,6 +909,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 
 					if (*(c + 1) == '.' && (*(c + 2) == '0')) {
 						*name = "Windows:Windows Phone OS 7.0";
+					} else if (*(c + 1) == '.' && (*(c + 2) == '5')) {
+						*name = "Windows:Windows Phone OS 7.5";
 					}
 				}
 
@@ -966,12 +968,24 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 				*name = "Android:Android 2.1";
 			} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
 				*name = "Android:Android 2.2";
+			} else if (*(c + 1) == '.' && (*(c + 2) == '3')) {
+				*name = "Android:Android 2.3";
 			} else {
 				*name = "Android:Unknown Android";
 			}
 		} else if (*c == '3') {
 			if (*(c + 1) == '.' && (*(c + 2) == '0')) {
 				*name = "Android:Android 3.0";
+			} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+				*name = "Android:Android 3.1";
+			} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
+				*name = "Android:Android 3.2";
+			} else {
+				*name = "Android:Unknown Android";
+			}
+		} else if (*c == '4') {
+			if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+				*name = "Android:Android 4.0";
 			} else {
 				*name = "Android:Unknown Android";
 			}
@@ -999,6 +1013,8 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 					*name = "iOS (Apple):iPhone 3.0";
 				} else if (*c == '4') {
 					*name = "iOS (Apple):iPhone 4.0";
+				} else if (*c == '5') {
+					*name = "iOS (Apple):iPhone 5.0";
 				} else {
 					*name = "iOS (Apple):iPhone Unknown";
 				}
