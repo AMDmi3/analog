@@ -779,6 +779,7 @@ void Bnextname(char **name, char **nameend, char *whole, void *arg) {
 			((*name = strstr(whole, "Firefox")) != NULL && (len = 7)) ||
 			((*name = strstr(whole, "Chimera")) != NULL && (len = 7)) ||
 			((*name = strstr(whole, "Camino")) != NULL && (len = 6)) ||
+			((*name = strstr(whole, "Edge")) != NULL && (len = 4)) ||
 			((*name = strstr(whole, "Chrome")) != NULL && (len = 6)) ||
 			((*name = strstr(whole, "Safari")) != NULL && (len = 6)) ||
 			((*name = strstr(whole, "WebTV")) != NULL && (len = 5)) ||
@@ -912,7 +913,7 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 					} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
 						/* For some Very Strange Reason Windows Phone 6.5 appears after a Windows XP UA */
 						if (strstr(whole, "Windows Phone 6.5") != NULL) {
-							*name = "Windows:Windows Phone OS 6.5";
+							*name = "Windows:Windows Phone 6.5";
 						} else {
 							*name = "Windows:Windows XP";
 						}
@@ -935,6 +936,12 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 					}
 				} else if (*c >= '7' && *c <= '9') {
 					*name = "Windows:Unknown Windows";
+				} else if (*c == '1' && (*(c + 1) == '0')) {
+					if (*(c + 2) == '.' && (*(c + 3) == '0')) {
+						*name = "Windows:Windows 10/Server 2016";
+					} else {
+						*name = "Windows:Unknown Windows";
+					}
 				} else {
 					*name = "Windows:Windows NT 4.0";
 				}
@@ -971,15 +978,15 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 					if (*c == '7') {
 
 						if (*(c + 1) == '.' && (*(c + 2) == '0')) {
-							*name = "Windows:Windows Phone OS 7.0";
+							*name = "Windows:Windows Phone 7.0";
 						} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
-							*name = "Windows:Windows Phone OS 7.5";
+							*name = "Windows:Windows Phone 7.5";
 						} else if (*(c + 1) == '.' && (*(c + 2) == '5')) {
-							*name = "Windows:Windows Phone OS 7.5";
+							*name = "Windows:Windows Phone 7.5";
 						} else if (*(c + 1) == '.' && (*(c + 2) == '8')) {
-							*name = "Windows:Windows Phone OS 7.8";
+							*name = "Windows:Windows Phone 7.8";
 						} else {
-							*name = "Windows:Windows Phone OS Unknown";
+							*name = "Windows:Windows Phone Unknown";
 						}
 
 					} else if  (*c == '8') {
@@ -987,17 +994,26 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						if (*(c + 1) == '.' && (*(c + 2) == '0')) {
 							*name = "Windows:Windows Phone OS 8.0";
 						} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
-							*name = "Windows:Windows Phone OS 8.1";
+							*name = "Windows:Windows Phone 8.1";
 						} else {
-							*name = "Windows:Windows Phone OS Unknown";
+							*name = "Windows:Windows Phone Unknown";
 						}
 
+					} else if  (*c == '1' && (*(c + 1) == '0')) {
+
+						if (*(c + 2) == '.' && (*(c + 2) == '0')) {
+							*name = "Windows:Windows Phone 10.0";
+						} else {
+							*name = "Windows:Windows Phone Unknown";
+						}
+
+
 					} else {
-						*name = "Windows:Windows Phone OS Unknown";
+						*name = "Windows:Windows Phone Unknown";
 					}
 
 				} else {
-					*name = "Windows:Windows Phone OS Unknown";
+					*name = "Windows:Windows Phone Unknown";
 				}
 				
 		  /* next three not MSIE, but some other vendor might use them */
@@ -1081,6 +1097,20 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 				} else {
 					*name = "Android:Unknown Android";
 				}
+			} else if (*c == '5') {
+				if (*(c + 1) == '.' && (*(c + 2) == '0')) {
+					*name = "Android:Android 5.0";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '1')) {
+					*name = "Android:Android 5.1";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '2')) {
+					*name = "Android:Android 5.2";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '3')) {
+					*name = "Android:Android 5.3";
+				} else if (*(c + 1) == '.' && (*(c + 2) == '4')) {
+					*name = "Android:Android 5.4";
+				} else {
+					*name = "Android:Unknown Android";
+				}
 			} else {
 				*name = "Android:Unknown Android";
 			}
@@ -1111,6 +1141,10 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPhone 6.0";
 					} else if (*c == '7') {
 						*name = "iOS (Apple):iPhone 7.0";
+					} else if (*c == '8') {
+						*name = "iOS (Apple):iPhone 8.0";
+					} else if (*c == '9') {
+						*name = "iOS (Apple):iPhone 9.0";
 					} else {
 						*name = "iOS (Apple):iPhone Unknown";
 					}
@@ -1137,6 +1171,10 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPad 6.0";
 					} else if (*c == '7') {
 						*name = "iOS (Apple):iPad 7.0";
+					} else if (*c == '8') {
+						*name = "iOS (Apple):iPad 8.0";
+					} else if (*c == '9') {
+						*name = "iOS (Apple):iPad 9.0";
 					} else {
 						*name = "iOS (Apple):iPad Unknown";
 					}
@@ -1165,6 +1203,10 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 						*name = "iOS (Apple):iPod 6.0";
 					} else if (*c == '7') {
 						*name = "iOS (Apple):iPod 7.0";
+					} else if (*c == '8') {
+						*name = "iOS (Apple):iPod 8.0";
+					} else if (*c == '9') {
+						*name = "iOS (Apple):iPod 9.0";
 					} else {
 						*name = "iOS (Apple):iPod Unknown";
 					}
@@ -1184,6 +1226,10 @@ void Pnextname(char **name, char **nameend, char *whole, void *arg) {
 					c += 3;
 					if (*c == '0') {
 						*name = "Apple:Mac OS X 10.0";
+					} else if (*c == '1' && (*(c + 1) == '0')) {
+						*name = "Apple:Mac OS X 10.10";
+					} else if (*c == '1' && (*(c + 1) == '1')) {
+						*name = "Apple:Mac OS X 10.11";
 					} else if (*c == '1') {
 						*name = "Apple:Mac OS X 10.1";
 					} else if (*c == '2') {
