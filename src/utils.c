@@ -417,7 +417,7 @@ void print_progversion(FILE *f) {
   if (!done) {
     if (cgi)
       fprintf(f, "[%s] ", starttimestr);
-    fprintf(f, "%s: analog version %s\n", commandname, VERSION);
+    fprintf(f, "%s: analog C:Amie Edition version %s\n", commandname, VERSION);
     done = TRUE;
   }
 }

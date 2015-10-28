@@ -32,7 +32,7 @@ void cro_pagetitle(FILE *outf, Outchoices *od) {
   if (!strcaseeq(od->headerfile, "none"))
     cro_includefile(outf, od, od->headerfile, 'h');
 
-  fprintf(outf, "x%sVE%sanalog %s\n", od->compsep, od->compsep, VNUMBER);
+  fprintf(outf, "x%sVE%sanalog C:Amie Edition %s\n", od->compsep, od->compsep, VNUMBER);
   fprintf(outf, "x%sHN%s%s\n", od->compsep, od->compsep, od->hostname);
   if (!strcaseeq(od->hosturl, "none"))
     fprintf(outf, "x%sHU%s%s\n", od->compsep, od->compsep, od->hosturl);
