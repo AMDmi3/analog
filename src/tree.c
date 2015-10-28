@@ -773,6 +773,7 @@ void Bnextname(char **name, char **nameend, char *whole, void *arg) {
 			((*name = strstr(whole, "Mosaic")) != NULL && (len = 6)) ||
 			((*name = strstr(whole, "mosaic")) != NULL && (len = 6)) ||
 			((*name = strstr(whole, "Konqueror")) != NULL && (len = 9)) ||
+			((*name = strstr(whole, "Baiduspider")) != NULL && (len = 11)) ||
 			((*name = strstr(whole, "Galeon")) != NULL && (len = 6)) ||
 			((*name = strstr(whole, "Phoenix")) != NULL && (len = 7)) ||
 			((*name = strstr(whole, "Firebird")) != NULL && (len = 8)) ||
